@@ -2,8 +2,7 @@
 @inject SignInManager<SiteFilms.Data.Person> SignInManager
 @model CatalogView
 @{
-    int y = 1, kol = 2;
-    int start = 0, end = 0;
+    int y = 1;
 }
 
 <table width="100%">
@@ -12,7 +11,7 @@
             <h1>Catalog</h1>
         </td>
         <td style="text-align: right">
-            @if (User.Identity.IsAuthenticated)
+            @if (User.Identity!.IsAuthenticated)
             {
                 <div style="margin: 20px auto">
                     <a class="btn btn-primary" asp-controller="Home" asp-action="AddVideo">Add video</a>
@@ -30,6 +29,22 @@
 }
 else
 {
+
+    <form method="post" asp-antiforgery="true" asp-controller=@Model.Controller asp-action=@Model.Action>
+
+        <div style="width: 90px">
+            @Html.DropDownListFor(m => m.CountOnPage, new SelectList(Model.AllCountOnPage), new { @class = "form-select" })
+        </div>
+
+        <input type="number" asp-for="@Model.UserId" autocomplete="off" value=@Model.UserId hidden />
+        <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
+        <input type="number" asp-for="@Model.CountOnPage" autocomplete="off" value=@Model.CountOnPage hidden />
+
+        <div class="my_button" style="margin:0px 10px">
+            <button class="btn btn-primary" type="submit">Change</button>
+        </div>
+    </form>
+
     <table class="table table-hover" style="margin: 0px auto">
         @foreach (var val in Model.Videos)
         {
@@ -69,39 +84,6 @@ else
         }
     </table>
 
-    <div style="margin: 20px auto; display:flex; text-align:center">
-        @if(Model.PageIndex > kol && Model.PageIndex < Model.PageCount - kol)
-        {
-            start = Model.PageIndex - kol;
-            end = Model.PageIndex + kol;
-        }
-        else
-        {
-            start = 0;
-            end = Model.PageCount;
-        }
-
-        @for (int i = start, l = 1; i < end; i++, l++)
-        {
-            <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="Catalog">
-
-                <input type="number" asp-for="@Model.PageIndex" autocomplete="off" value="@i" hidden />
-                <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
-                <input type="number" asp-for="@Model.CountOnPage" autocomplete="off" value=@Model.CountOnPage hidden />
-
-                <div class="my_button" style="margin:0px 10px">
-                    @if (i == Model.PageIndex)
-                    {
-                        <button class="btn btn-primary" type="submit"><span>@l</span></button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-secondary" type="submit"><span>@l</span></button>
-                    }
-                </div>
-            </form>
-        }
-    </div>
-
+   @await Html.PartialAsync("_Nav", Model)
 }
 

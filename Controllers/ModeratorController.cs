@@ -28,11 +28,18 @@ namespace SiteFilms.Controllers
                 .Include(x => x.Genre)
                 .Take(countOnPage)
                 .ToListAsync();
-            return View("Index", new CatalogView(videos, 1, count / countOnPage + 1, countOnPage));
+
+            var action = ControllerContext.ActionDescriptor.ActionName;
+            var controller = ControllerContext.ActionDescriptor.ControllerName;
+            var pageCount = count % countOnPage == 0 ? count / countOnPage : count / countOnPage + 1;
+
+            var catalog = new CatalogView(videos, 0, pageCount, countOnPage, controller, action);
+
+            return View("Index", catalog);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(CatalogView? view)
+        public async Task<IActionResult> Index(CatalogView view)
         {
             view ??= new CatalogView();
             var videos = await _db.Videos
@@ -44,7 +51,9 @@ namespace SiteFilms.Controllers
                 .Take(view.CountOnPage)
                 .ToListAsync();
 
-            return View("Index", new CatalogView(videos, view.PageIndex, view.PageCount, view.CountOnPage));
+            view.Videos = videos;
+
+            return View("Index", view);
         }
 
         #region Country

@@ -22,8 +22,12 @@ namespace SiteFilms.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             user ??= new();
-            byte countOnPage = 1;
-            var count = await _db.Videos.AsNoTracking().CountAsync();
+            byte countOnPage = 5;
+            var count = await _db.Videos
+                .AsNoTracking()
+                .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
+                .CountAsync();
+
             var videos = await _db.Videos
                 .AsNoTracking()
                 .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
@@ -32,17 +36,31 @@ namespace SiteFilms.Controllers
                 .Take(countOnPage)
                 .ToListAsync();
 
-            var pageCount = count % countOnPage == 0 ? count / countOnPage : count / countOnPage + 1;
-            return View("Catalog", new CatalogView(videos, 0, pageCount, countOnPage, user.Id));
+            var action = ControllerContext.ActionDescriptor.ActionName;
+            var controller = ControllerContext.ActionDescriptor.ControllerName;
+            var pageCount = count / countOnPage + (count % countOnPage == 0 ? 0 : 1);
+
+            var catalog = new CatalogView(videos, 0, pageCount, countOnPage, controller, action, user.Id);
+
+            return View("Catalog", catalog);
         }
 
         [HttpPost]
         public async Task<IActionResult> Catalog(CatalogView? view)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            user ??= new();
+            var user = await _userManager.GetUserAsync(HttpContext.User) ?? new Person();
 
             view ??= new CatalogView();
+
+            var count = await _db.Videos
+                .AsNoTracking()
+                .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
+                .CountAsync();
+
+            view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
+
+            if (view.PageIndex >= view.PageCount || view.PageIndex < 0) view.PageIndex = 0;
+
             var videos = await _db.Videos
                 .AsNoTracking()
                 .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
@@ -51,7 +69,11 @@ namespace SiteFilms.Controllers
                 .Skip(view.PageIndex * view.CountOnPage)
                 .Take(view.CountOnPage)
                 .ToListAsync();
-            return View("Catalog", new CatalogView(videos, view.PageIndex, view.PageCount, view.CountOnPage, user.Id));
+
+            view.Videos = videos;
+            view.UserId = user.Id;
+
+            return View("Catalog", view);
         }
 
         [Authorize]
@@ -103,6 +125,15 @@ namespace SiteFilms.Controllers
             await _db.SaveChangesAsync();
 
             return View("_Errors", new Error("Success!", "Video save."));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteVideo(VideoView newVideo)
+        {
+            var delete = await _db.Videos.FirstAsync(x => x.Id == newVideo.Video.Id);
+            _db.Videos.Remove(delete);
+            await _db.SaveChangesAsync();
+            return View("_Errors", new Error("Success!", "Video was deleted."));
         }
 
         public async Task<IActionResult> ShowVideo(uint Id) 

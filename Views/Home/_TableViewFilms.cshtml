@@ -1,0 +1,43 @@
+﻿@model VideoView
+
+<tr>
+    <td>@Html.LabelFor(x => x.Video.Name)</td>
+    <td>
+        <input asp-for="@Model.Video.Name" type="text" autocomplete="off" class="form-control" />
+    </td>
+</tr>
+<tr>
+    <td>@Html.LabelFor(x => x.Video.Description)</td>
+    <td>@Html.TextBoxFor(x => x.Video.Description, new { @class = "form-control" })</td>
+</tr>
+<tr>
+    <td>@Html.LabelFor(x => x.Video.MakeDate)</td>
+    <td>
+        <input asp-for="@Model.Video.MakeDate" class="form-control" type="date" />
+    </td>
+</tr>
+
+<tr>
+    <td>@Html.LabelFor(x => x.Video.TimeVideo)</td>
+    <td>
+        <input type="number" asp-for="@Model.Video.TimeVideo" autocomplete="off" class="form-control" />
+    </td>
+</tr>
+<tr>
+    <td>@Html.LabelFor(x => x.Video.AgeRestriction)</td>
+    <td>
+        <input type="number" asp-for="@Model.Video.AgeRestriction" autocomplete="off" class="form-control" />
+    </td>
+</tr>
+<tr>
+    <td>@Html.LabelFor(x => x.Video.Country)</td>
+    <td>
+        @Html.DropDownListFor(m => m.Video.CountryId, new SelectList(Model.Countries, "Id", "Name"), new { @class = "form-select" })
+    </td>
+</tr>
+<tr>
+    <td>@Html.LabelFor(x => x.Video.Genre)</td>
+    <td>
+        @Html.DropDownListFor(m => m.Video.GenreId, new SelectList(Model.Genres, "Id", "Name"), new { @class = "form-select" })
+    </td>
+</tr>

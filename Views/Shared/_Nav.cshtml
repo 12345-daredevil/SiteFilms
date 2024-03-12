@@ -1,13 +1,57 @@
-﻿@model int[]
+﻿@model CatalogView
+@{
+    int kol = 2;
+    int start = 0, end = 0, l = 0;
+}
 
-<div style="margin: 20px auto; display:flex; text-align:center">
-    @for (int i = 0, l = 1; i < Model[0]; i++, l++)
+
+<div style="margin: 20px auto; display:ruby-text; text-align:center; width: 400px;">
+    @if (Model.PageIndex >= kol && Model.PageIndex < Model.PageCount - kol)
     {
-        <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="Catalog">
-            <input type="number" asp-for="@Model[0]" autocomplete="off" value=@Model[0] hidden />
-            <input type="number" asp-for="@Model[1]" autocomplete="off" value="@i" hidden />
-            <div class="my_button">
-                @if(i == Model[1])
+        start = Model.PageIndex - kol;
+        end = Model.PageIndex + kol + 1;
+    }
+
+    else if (Model.PageIndex < kol && Model.PageCount > kol)
+    {
+        start = 0;
+        end = kol + 1;
+    }
+
+    else if (Model.PageIndex < kol && Model.PageCount <= kol)
+    {
+        start = 0;
+        end = Model.PageCount;
+    }
+
+
+    else if (Model.PageIndex >= Model.PageCount - kol)
+    {
+        start = Model.PageCount - kol - 1;
+        end = Model.PageCount;
+    }
+
+    else
+    {
+        start = 0;
+        end = Model.PageCount;
+    }
+
+    @{
+        l = start + 1;
+    }
+
+    @for (int i = start; i < end; i++, l++)
+    {
+        <form method="post" asp-antiforgery="true" asp-controller=@Model.Controller asp-action=@Model.Action>
+
+            <input type="number" asp-for="@Model.UserId" autocomplete="off" value=@Model.UserId hidden />
+            <input type="number" asp-for="@Model.PageIndex" autocomplete="off" value="@i" hidden />
+            <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
+            <input type="number" asp-for="@Model.CountOnPage" autocomplete="off" value=@Model.CountOnPage hidden />
+
+            <div class="my_button" style="margin:0px 10px">
+                @if (i == Model.PageIndex)
                 {
                     <button class="btn btn-primary" type="submit"><span>@l</span></button>
                 }

@@ -10,6 +10,8 @@
     <a class="btn btn-primary" asp-controller="Moderator" asp-action="ShowGenre">Genre</a>
 </div>
 
+<br />
+
 @if (Model.Videos == null || Model.Videos.Count == 0)
 {
     <p>No data!</p>
@@ -54,19 +56,8 @@ else
             y++;
         }
     </table>
-    <div style="margin: 20px auto; display:flex; text-align:center">
-        @for (int i = 0, l = 1; i < Model.PageCount; i++, l++)
-        {
-            <form method="post" asp-antiforgery="true" asp-controller="Moderator" asp-action="Index">
-                <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
-                <input type="number" asp-for="@Model.PageIndex" autocomplete="off" value="@i" hidden />
-                <div class="my_button">
-                    <button class="btn btn-primary" type="submit"><span>@l</span></button>
-                </div>
-            </form>
-        }
-    </div>
 
-    @await Html.PartialAsync("_Nav", new int[Model.PageCount, Model.PageIndex])
+    @await Html.PartialAsync("_Nav", Model)
+
 }
 
