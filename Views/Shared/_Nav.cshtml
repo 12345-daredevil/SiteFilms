@@ -1,0 +1,21 @@
+﻿@model int[]
+
+<div style="margin: 20px auto; display:flex; text-align:center">
+    @for (int i = 0, l = 1; i < Model[0]; i++, l++)
+    {
+        <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="Catalog">
+            <input type="number" asp-for="@Model[0]" autocomplete="off" value=@Model[0] hidden />
+            <input type="number" asp-for="@Model[1]" autocomplete="off" value="@i" hidden />
+            <div class="my_button">
+                @if(i == Model[1])
+                {
+                    <button class="btn btn-primary" type="submit"><span>@l</span></button>
+                }
+                else
+                {
+                    <button class="btn btn-secondary" type="submit"><span>@l</span></button>
+                }
+            </div>
+        </form>
+    }
+</div>

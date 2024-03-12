@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+
+<partial name="_Head" />
+<body>
+    <partial name="_Header" />
+    <div class="container">
+        <main role="main" class="pb-3">
+            <div style="max-width: 700px; margin: 20px auto">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - SiteFilms - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

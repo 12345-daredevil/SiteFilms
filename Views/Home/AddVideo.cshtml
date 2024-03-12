@@ -1,0 +1,58 @@
+﻿@model VideoView
+
+<h1>Add video</h1>
+
+<form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="AddVideo">
+    <table>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Name)</td>
+            <td>
+                <input asp-for="@Model.Video.Name" type="text" autocomplete="off" class="form-control" />
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Description)</td>
+            <td>@Html.TextBoxFor(x => x.Video.Description)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.MakeDate)</td>
+            <td>
+                <input asp-for="@Model.Video.MakeDate" class="form-control" type="date" />
+            </td> 
+        </tr>
+
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.TimeVideo)</td>
+            <td>@Html.TextBoxFor(x => x.Video.TimeVideo)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.AgeRestriction)</td>
+            <td>
+                <input type="number" asp-for="@Model.Video.AgeRestriction" autocomplete="off" />
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Country)</td>
+             <td>
+                @Html.DropDownListFor(m => m.Video.CountryId, new SelectList(Model.Countries, "Id", "Name"))
+            </td>
+       </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Genre)</td>
+            <td>
+                @Html.DropDownListFor(m => m.Video.GenreId, new SelectList(Model.Genres, "Id", "Name"))
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="my_button">
+                    <button class="btn btn-primary" type="submit"> Save </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

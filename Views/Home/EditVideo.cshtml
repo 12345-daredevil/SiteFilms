@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<SiteFilms.Data.Person> SignInManager
+@model VideoView
+
+<h1>Edit video</h1>
+
+<form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
+    <table>
+        @Html.HiddenFor(x => x.Video.Id)
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Name)</td>
+            <td>@Html.TextBoxFor(x => x.Video.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Description)</td>
+            <td>@Html.TextBoxFor(x => x.Video.Description)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.MakeDate)</td>
+            <td>
+                <input asp-for="@Model.Video.MakeDate" class="form-control" type="date" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.TimeVideo)</td>
+            <td>@Html.TextBoxFor(x => x.Video.TimeVideo)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.AgeRestriction)</td>
+            <td>
+                <input type="number" asp-for="@Model.Video.AgeRestriction" autocomplete="off" />
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Country)</td>
+            <td>
+                @Html.DropDownListFor(m => m.Video.CountryId, new SelectList(Model.Countries, "Id", "Name"))
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Video.Genre)</td>
+            <td>
+                @Html.DropDownListFor(m => m.Video.GenreId, new SelectList(Model.Genres, "Id", "Name"))
+            </td>
+        </tr>
+
+        @if (User.IsInRole("moderator") || User.IsInRole("admin"))
+        {
+            <tr>
+                <td>@Html.LabelFor(x => x.Video.FlagCheck)</td>
+                <td>
+                    @Html.CheckBoxFor(x => x.Video.FlagCheck)
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <td>
+                <div class="my_button">
+                    <button class="btn btn-primary" type="submit"> Save </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

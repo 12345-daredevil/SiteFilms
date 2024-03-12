@@ -1,0 +1,107 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<SiteFilms.Data.Person> SignInManager
+@model CatalogView
+@{
+    int y = 1, kol = 2;
+    int start = 0, end = 0;
+}
+
+<table width="100%">
+    <tr>
+        <td>
+            <h1>Catalog</h1>
+        </td>
+        <td style="text-align: right">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div style="margin: 20px auto">
+                    <a class="btn btn-primary" asp-controller="Home" asp-action="AddVideo">Add video</a>
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+<br />
+
+@if (Model.Videos == null || Model.Videos.Count == 0)
+{
+    <p>No data!</p>
+}
+else
+{
+    <table class="table table-hover" style="margin: 0px auto">
+        @foreach (var val in Model.Videos)
+        {
+            <tr>
+                <td rowspan="3">@y</td>
+                <td rowspan="3">@y</td>
+                <td colspan="3">Название: @val.Name</td>
+            </tr>
+            <tr>
+                <td>Создан: @val.MakeDate.ToShortDateString()</td>
+                <td>Страна: @val.Country?.Name</td>
+                <td>Жанр: @val.Genre?.Name</td>
+            </tr>
+            <tr>
+                <td>Продолжительность: @val.TimeVideo</td>
+                <td>Возраст: +@val.AgeRestriction</td>
+                <td style="display: ruby-text; text-align:right">
+                    @if(!val.FlagCheck && val.AspNetUsersId == Model.UserId)
+                    {
+                        <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
+                            <input type="number" name="Id" value="@val.Id" hidden />
+                            <div class="my_button">
+                                <button class="btn btn-primary" type="submit">Edit</button>
+                            </div>
+                        </form>
+                    }
+
+                    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="ShowVideo">
+                        <input type="number" name="Id" value="@val.Id" hidden />
+                        <div class="my_button">
+                            <button class="btn btn-primary" type="submit">Show</button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+            y++;
+        }
+    </table>
+
+    <div style="margin: 20px auto; display:flex; text-align:center">
+        @if(Model.PageIndex > kol && Model.PageIndex < Model.PageCount - kol)
+        {
+            start = Model.PageIndex - kol;
+            end = Model.PageIndex + kol;
+        }
+        else
+        {
+            start = 0;
+            end = Model.PageCount;
+        }
+
+        @for (int i = start, l = 1; i < end; i++, l++)
+        {
+            <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="Catalog">
+
+                <input type="number" asp-for="@Model.PageIndex" autocomplete="off" value="@i" hidden />
+                <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
+                <input type="number" asp-for="@Model.CountOnPage" autocomplete="off" value=@Model.CountOnPage hidden />
+
+                <div class="my_button" style="margin:0px 10px">
+                    @if (i == Model.PageIndex)
+                    {
+                        <button class="btn btn-primary" type="submit"><span>@l</span></button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary" type="submit"><span>@l</span></button>
+                    }
+                </div>
+            </form>
+        }
+    </div>
+
+}
+

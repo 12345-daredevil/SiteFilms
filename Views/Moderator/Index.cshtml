@@ -1,0 +1,72 @@
+﻿@model CatalogView
+@{
+    int y = 1;
+}
+
+<h1>Moderator</h1>
+
+<div style="margin: 20px auto">
+    <a class="btn btn-primary" asp-controller="Moderator" asp-action="ShowCountry">Country</a>
+    <a class="btn btn-primary" asp-controller="Moderator" asp-action="ShowGenre">Genre</a>
+</div>
+
+@if (Model.Videos == null || Model.Videos.Count == 0)
+{
+    <p>No data!</p>
+}
+else
+{
+    <table class="table table-hover" style="margin: 0px auto">
+        @foreach (var val in Model.Videos)
+        {
+            <tr>
+                <td rowspan="3">@y</td>
+                <td rowspan="3">@y</td>
+                <td colspan="3">Название: @val.Name</td>
+            </tr>
+            <tr>
+                <td>Создан: @val.MakeDate.ToShortDateString()</td>
+                <td>Страна: @val.Country?.Name</td>
+                <td>Жанр: @val.Genre?.Name</td>
+            </tr>
+            <tr>
+                <td>Продолжительность: @val.TimeVideo</td>
+                <td>Возраст: +@val.AgeRestriction</td>
+                <td style="display: ruby-text; text-align:right">
+                    @if (!val.FlagCheck)
+                    {
+                        <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
+                            <input type="number" name="Id" value="@val.Id" hidden />
+                            <div class="my_button">
+                                <button class="btn btn-primary" type="submit">Edit</button>
+                            </div>
+                        </form>
+                    }
+
+                    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="ShowVideo">
+                        <input type="number" name="Id" value="@val.Id" hidden />
+                        <div class="my_button">
+                            <button class="btn btn-primary" type="submit">Show</button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+            y++;
+        }
+    </table>
+    <div style="margin: 20px auto; display:flex; text-align:center">
+        @for (int i = 0, l = 1; i < Model.PageCount; i++, l++)
+        {
+            <form method="post" asp-antiforgery="true" asp-controller="Moderator" asp-action="Index">
+                <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
+                <input type="number" asp-for="@Model.PageIndex" autocomplete="off" value="@i" hidden />
+                <div class="my_button">
+                    <button class="btn btn-primary" type="submit"><span>@l</span></button>
+                </div>
+            </form>
+        }
+    </div>
+
+    @await Html.PartialAsync("_Nav", new int[Model.PageCount, Model.PageIndex])
+}
+

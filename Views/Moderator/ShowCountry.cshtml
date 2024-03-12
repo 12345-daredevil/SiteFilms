@@ -1,0 +1,45 @@
+﻿@model List<Country>
+@{
+    int l = 1;
+}
+
+<h1>Show country</h1>
+
+<div style="width: 400px; margin: 0px auto">
+    <form method="post" asp-antiforgery="true" asp-controller="Moderator" asp-action="AddCountry">
+        <div style="margin: 20px auto; text-align:center">
+            <input name="name" type="text" value="" autocomplete="off" />
+            <button class="btn btn-primary" type="submit"> Add country </button>
+        </div>
+    </form>
+    <br />
+
+    @if (Model.Count == 0)
+    {
+        <p>
+            No data!
+        </p>
+    }
+    else
+    {
+        <table class="table table-hover">
+            @foreach (var val in Model)
+            {
+                <tr>
+                    <td style="width:40px; text-align:center; vertical-align:middle">@l</td>
+                    <td style="text-align:center; vertical-align:middle">@val.Name</td>
+                    <td style="text-align:end; width: 100px">
+                        <form method="post" asp-antiforgery="true" asp-controller="Moderator" asp-action="DeleteCountry">
+                            <input type="number" name="Id" autocomplete="off" value=@val.Id hidden />
+                            <div class="my_button">
+                                <button class="btn btn-danger" type="submit">Delete</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                l++;
+            }
+        </table>
+    }
+
+</div>

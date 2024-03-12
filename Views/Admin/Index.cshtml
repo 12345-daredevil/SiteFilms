@@ -1,0 +1,14 @@
+﻿@model string[]
+
+<h1>Admin</h1>
+
+<form method="post" asp-antiforgery="true" asp-controller="Admin" asp-action="ShowRole">
+    <h2>Manage role</h2>
+    <div>
+        @Html.DropDownList("role", new SelectList(@Model))
+        <button class="btn btn-primary" type="submit"> Manage </button>
+    </div>
+</form>
+<br />
+
+<a class="btn btn-primary" asp-controller="Admin" asp-action="ShowMessage">Message</a>

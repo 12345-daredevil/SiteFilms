@@ -1,0 +1,15 @@
+﻿@model SiteFilms.ViewsModel.Error
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h1>@Model.Title</h1>
+<p>@Model.Message</p>
+
+
+@if(Model.NameController != null)
+{
+    <div style="margin: 20px auto">
+        <a class="btn btn-primary" asp-controller=@Model.NameController asp-action="Index">Cancel</a>
+    </div>
+}

@@ -1,0 +1,118 @@
+﻿@model SiteFilms.Data.Message
+@{
+    ViewData["Title"] = "MessageSetting";
+}
+
+<h4 style="margin: 20px auto">Message setting</h4>
+
+<form method="post" asp-antiforgery="true" asp-controller="Admin" asp-action="MessageSetting">
+    <table width="100%">
+        <tr>
+            <td>
+                <label asp-for="@Model.URL"></label>
+                <input type="text" asp-for="@Model.URL" autocomplete="off" />
+                <span asp-validation-for="@Model.URL" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="@Model.Port"></label>
+                <input type="number" asp-for="@Model.Port" autocomplete="off" />
+                <span asp-validation-for="@Model.Port" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="@Model.Email"></label>
+                <input type="email" asp-for="@Model.Email" autocomplete="off" />
+                <span asp-validation-for="@Model.Email" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="@Model.Login"></label>
+                <input type="email" asp-for="@Model.Login" autocomplete="off" />
+                <span asp-validation-for="@Model.Login" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="@Model.Password"></label>
+                <input type="text" asp-for="@Model.Password" autocomplete="off" />
+                <span asp-validation-for="@Model.Password" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="@Model.Title"></label>
+                <input type="text" asp-for="@Model.Title" autocomplete="off" />
+                <span asp-validation-for="@Model.Title" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="@Model.NameSite"></label>
+                <input type="text" asp-for="@Model.NameSite" autocomplete="off" />
+                <span asp-validation-for="@Model.NameSite" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="my_button">
+                    <button class="btn btn-primary" type="submit"> Save </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+<br />
+
+<form method="post" asp-antiforgery="true" asp-controller="Admin" asp-action="FlagSendMessage">
+    <table width="100%">
+        <tr>
+            <td><h4>Auto message</h4></td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="@Model.Flag"></label>
+                <input type="checkbox" asp-for="@Model.Flag" autocomplete="off" style="width:auto" />
+                <span asp-validation-for="@Model.Flag" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="my_button">
+                    <button class="btn btn-primary" type="submit"> Save </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+<br />
+
+<form method="post" asp-antiforgery="true" asp-controller="Admin" asp-action="MessageSend">
+    <table width="100%">
+        <tr>
+            <td><h4>Send message</h4></td>
+        </tr>
+        <tr>
+            <td>
+                <label asp-for="Email"></label>
+                <input type="email" asp-for="Email" autocomplete="off" value="" />
+                <span asp-validation-for="Email" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="my_button">
+                    <button class="btn btn-primary" type="submit"> Send </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+<br />
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
