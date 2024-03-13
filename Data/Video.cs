@@ -22,8 +22,8 @@ namespace SiteFilms.Data
         public Genre? Genre { get; set; }
         public ushort TimeVideo { get; set; }
         public byte AgeRestriction { get; set; }
-        public DateTime MakeDate { get; set; } = DateTime.UtcNow.Date;
-        public DateTime AddDate { get; set; }
+        public DateTime MakeDate { get; set; } 
+        public DateTime AddDate { get; set; } = DateTime.UtcNow.Date;
         public bool FlagCheck { get; set; } = false;
 
         public Video() { }

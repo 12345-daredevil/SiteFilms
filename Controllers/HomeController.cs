@@ -55,6 +55,9 @@ namespace SiteFilms.Controllers
             view.Videos = CatalogView.GetListVideo(_db, view);
             view.UserId = user.Id;
 
+            CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
+            CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
+
             return View("Catalog", view);
         }
 

@@ -19,6 +19,7 @@ namespace SiteFilms.ViewsModel
         public string? UserId { get; set; }
         public string? MyController { get; set; }
         public string? MyAction { get; set; }
+        public bool Moderator { get; set; } = false;
 
         public CatalogView() { }
 
@@ -40,44 +41,41 @@ namespace SiteFilms.ViewsModel
 
         public static int CountListVideo(ApplicationDbContext _db, CatalogView view)
         {
-            var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId);
+            var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId, view.Moderator);
             return _db.Videos.AsNoTracking().Where(abc).Count();
         }
 
         public static List<Video> GetListVideo(ApplicationDbContext _db, CatalogView view)
         {
-            List<Video> videos = [];
-
-            var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId);
+            var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId, view.Moderator);
 
             return _db.Videos
                 .AsNoTracking()
-                .Where(abc)
-                .AsQueryable()
                 .Include(x => x.Country)
                 .Include(x => x.Genre)
+                .Where(abc)
                 .Skip(view.PageIndex * view.CountOnPage)
                 .Take(view.CountOnPage)
                 .ToList();
         }
 
-        static Func<Video, bool> Filter(int selectGenre, int selectCountry, string? userId)
+        static Func<Video, bool> Filter(int selectGenre, int selectCountry, string? userId, bool moderetor)
         {
             Func<Video, bool> abc = x => x.TimeVideo >= 0;
 
-            var moder = true;
-            if (!moder)
-            {
-                abc = x => x.FlagCheck;
-                if (userId != null)
-                    abc += x => x.AspNetUsersId == userId;
-            }
+            abc = x => x.FlagCheck || x.AspNetUsersId == userId;
 
-            if (selectGenre != 0)
+            if (selectGenre != 0 && selectCountry == 0)
                 abc += x => x.GenreId == selectGenre;
 
-            if (selectCountry != 0)
+            if (selectGenre == 0 && selectCountry != 0)
                 abc += x => x.CountryId == selectCountry;
+
+            if (selectGenre != 0 && selectCountry != 0)
+                abc += x => x.CountryId == selectCountry && x.GenreId == selectGenre;
+
+            if (moderetor)
+            {}
 
             return abc;
         }
