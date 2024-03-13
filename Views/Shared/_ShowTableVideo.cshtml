@@ -28,6 +28,13 @@ else
                 <td style="display: ruby-text; text-align:right">
                     @if (User.IsInRole("moderator") || User.IsInRole("admin"))
                     {
+                        @if(!val.FlagCheck)
+                        {
+                            <div>
+                                <img src="~/image/eye.png" height="30" />
+                            </div>
+                        }
+
                         <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
                             <input type="number" name="Id" value="@val.Id" hidden />
                             <div class="my_button">

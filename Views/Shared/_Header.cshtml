@@ -18,7 +18,6 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a>
                     </li>
 
-
                     @if (User.IsInRole("moderator") || User.IsInRole("admin"))
                     {
                         <li class="nav-item">

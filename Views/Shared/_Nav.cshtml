@@ -4,7 +4,6 @@
     int start = 0, end = 0, l = 0;
 }
 
-
 <div style="margin: 50px auto; display:ruby-text; text-align:center; width: 400px;">
     @if (Model.PageIndex >= kol && Model.PageIndex < Model.PageCount - kol)
     {
@@ -45,10 +44,13 @@
     {
         <form method="post" asp-antiforgery="true" asp-controller=@Model.MyController asp-action=@Model.MyAction>
 
-            <input type="number" asp-for="@Model.UserId" autocomplete="off" value=@Model.UserId hidden />
             <input type="number" asp-for="@Model.PageIndex" autocomplete="off" value="@i" hidden />
-            <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
-            <input type="number" asp-for="@Model.CountOnPage" autocomplete="off" value=@Model.CountOnPage hidden />
+
+            @Html.HiddenFor(x => x.UserId)
+            @Html.HiddenFor(x => x.PageCount)
+            @Html.HiddenFor(x => x.CountOnPage)
+            @Html.HiddenFor(x => x.MyController)
+            @Html.HiddenFor(x => x.MyAction)
 
             <div class="my_button" style="margin:0px 10px">
                 @if (i == Model.PageIndex)
