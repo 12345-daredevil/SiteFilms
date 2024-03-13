@@ -1,9 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<SiteFilms.Data.Person> SignInManager
 @model CatalogView
-@{
-    int y = 1;
-}
 
 <table width="100%">
     <tr>
@@ -23,67 +20,10 @@
 
 <br />
 
-@if (Model.Videos == null || Model.Videos.Count == 0)
-{
-    <p>No data!</p>
-}
-else
-{
+@await Html.PartialAsync("_FilterVideo", Model)
 
-    <form method="post" asp-antiforgery="true" asp-controller=@Model.Controller asp-action=@Model.Action>
 
-        <div style="width: 90px">
-            @Html.DropDownListFor(m => m.CountOnPage, new SelectList(Model.AllCountOnPage), new { @class = "form-select" })
-        </div>
+@await Html.PartialAsync("_ShowTableVideo", Model)
 
-        <input type="number" asp-for="@Model.UserId" autocomplete="off" value=@Model.UserId hidden />
-        <input type="number" asp-for="@Model.PageCount" autocomplete="off" value=@Model.PageCount hidden />
-        <input type="number" asp-for="@Model.CountOnPage" autocomplete="off" value=@Model.CountOnPage hidden />
 
-        <div class="my_button" style="margin:0px 10px">
-            <button class="btn btn-primary" type="submit">Change</button>
-        </div>
-    </form>
-
-    <table class="table table-hover" style="margin: 0px auto">
-        @foreach (var val in Model.Videos)
-        {
-            <tr>
-                <td rowspan="3">@y</td>
-                <td rowspan="3">@y</td>
-                <td colspan="3">Название: @val.Name</td>
-            </tr>
-            <tr>
-                <td>Создан: @val.MakeDate.ToShortDateString()</td>
-                <td>Страна: @val.Country?.Name</td>
-                <td>Жанр: @val.Genre?.Name</td>
-            </tr>
-            <tr>
-                <td>Продолжительность: @val.TimeVideo</td>
-                <td>Возраст: +@val.AgeRestriction</td>
-                <td style="display: ruby-text; text-align:right">
-                    @if(!val.FlagCheck && val.AspNetUsersId == Model.UserId)
-                    {
-                        <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
-                            <input type="number" name="Id" value="@val.Id" hidden />
-                            <div class="my_button">
-                                <button class="btn btn-primary" type="submit">Edit</button>
-                            </div>
-                        </form>
-                    }
-
-                    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="ShowVideo">
-                        <input type="number" name="Id" value="@val.Id" hidden />
-                        <div class="my_button">
-                            <button class="btn btn-primary" type="submit">Show</button>
-                        </div>
-                    </form>
-                </td>
-            </tr>
-            y++;
-        }
-    </table>
-
-   @await Html.PartialAsync("_Nav", Model)
-}
 

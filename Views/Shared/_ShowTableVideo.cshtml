@@ -1,0 +1,64 @@
+﻿@model CatalogView
+@{
+    int y = 1;
+}
+
+@if (Model.Videos == null || Model.Videos.Count == 0)
+{
+    <p>No data!</p>
+}
+else
+{
+    <table class="table table-hover" style="margin: 0px auto">
+        @foreach (var val in Model.Videos)
+        {
+            <tr>
+                <td rowspan="3">@y</td>
+                <td rowspan="3">@y</td>
+                <td colspan="3">Название: @val.Name</td>
+            </tr>
+            <tr>
+                <td>Создан: @val.MakeDate.Date.Year</td>
+                <td>Страна: @val.Country?.Name</td>
+                <td>Жанр: @val.Genre?.Name</td>
+            </tr>
+            <tr>
+                <td>Продолжительность: @val.TimeVideo</td>
+                <td>Возраст: +@val.AgeRestriction</td>
+                <td style="display: ruby-text; text-align:right">
+                    @if (User.IsInRole("moderator") || User.IsInRole("admin"))
+                    {
+                        <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
+                            <input type="number" name="Id" value="@val.Id" hidden />
+                            <div class="my_button">
+                                <button class="btn btn-primary" type="submit">Edit</button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        @if (!val.FlagCheck && val.AspNetUsersId == Model.UserId)
+                        {
+                            <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
+                                <input type="number" name="Id" value="@val.Id" hidden />
+                                <div class="my_button">
+                                    <button class="btn btn-primary" type="submit">Edit</button>
+                                </div>
+                            </form>
+                        }
+                    }
+
+                    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="ShowVideo">
+                        <input type="number" name="Id" value="@val.Id" hidden />
+                        <div class="my_button">
+                            <button class="btn btn-primary" type="submit">Show</button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+            y++;
+        }
+    </table>
+
+    @await Html.PartialAsync("_Nav", Model)
+}

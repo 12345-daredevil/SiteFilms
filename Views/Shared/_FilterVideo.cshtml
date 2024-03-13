@@ -1,0 +1,36 @@
+﻿@model CatalogView
+
+<form method="post" asp-antiforgery="true" asp-controller=@Model.MyController asp-action=@Model.MyAction>
+    <div style="display:flex; justify-content:space-between; margin: 50px auto">
+        <div style="display:flex">
+            <div style="width: 120px">
+                @Html.DropDownListFor(m => m.CountOnPage, new SelectList(Model.AllCountOnPage), new { @class = "form-select" })
+            </div>
+
+            <div style="width: 120px">
+                @Html.DropDownListFor(m => m.SelectCountry, new SelectList(CatalogView.Country, "Id", "Name"), "Country", new { @class = "form-select" })
+            </div>
+
+            <div style="width: 120px">
+                @Html.DropDownListFor(m => m.SelectGenre, new SelectList(CatalogView.Genge, "Id", "Name"), "Genre", new { @class = "form-select" })
+            </div>
+
+            @if (User.IsInRole("moderator") || User.IsInRole("admin"))
+            {
+                <div style="width: 120px">
+                    @Html.DropDownListFor(m => m.SelectGenre, new SelectList(CatalogView.Genge, "Id", "Name"), "Genre", new { @class = "form-select" })
+                </div>
+            }
+        </div>
+
+        @Html.HiddenFor(x => x.UserId)
+        @Html.HiddenFor(x => x.PageCount)
+        @Html.HiddenFor(x => x.CountOnPage)
+        @Html.HiddenFor(x => x.MyController)
+        @Html.HiddenFor(x => x.MyAction)
+
+        <div class="my_button" style="margin:0px 10px">
+            <button class="btn btn-primary" type="submit">Change</button>
+        </div>
+    </div>
+</form>

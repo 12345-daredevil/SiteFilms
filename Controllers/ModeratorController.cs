@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,10 @@ namespace SiteFilms.Controllers
 
         public async Task<IActionResult> Index()
         {
-            byte countOnPage = 10;
-            var count = await _db.Videos.AsNoTracking().CountAsync();
+            byte countOnPage = 5;
+            var count = await _db.Videos.AsNoTracking().CountAsync(); 
             var videos = await _db.Videos
                 .AsNoTracking()
-                .Where(x => !x.FlagCheck)
                 .Include(x => x.Country)
                 .Include(x => x.Genre)
                 .Take(countOnPage)
@@ -51,7 +51,12 @@ namespace SiteFilms.Controllers
                 .Take(view.CountOnPage)
                 .ToListAsync();
 
-            view.Videos = videos;
+            var count = CatalogView.CountListVideo(_db, view);
+
+            view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
+            if (view.PageIndex >= view.PageCount || view.PageIndex < 0) view.PageIndex = 0;
+
+            view.Videos = CatalogView.GetListVideo(_db, view);
 
             return View("Index", view);
         }

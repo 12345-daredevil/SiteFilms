@@ -20,27 +20,22 @@ namespace SiteFilms.Controllers
 
         public async Task<IActionResult> Catalog()
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            user ??= new();
-            byte countOnPage = 5;
-            var count = await _db.Videos
-                .AsNoTracking()
-                .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
-                .CountAsync();
+            var user = await _userManager.GetUserAsync(HttpContext.User) ?? new();
 
-            var videos = await _db.Videos
-                .AsNoTracking()
-                .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
-                .Include(x => x.Country)
-                .Include(x => x.Genre)
-                .Take(countOnPage)
-                .ToListAsync();
+            var catalog = new CatalogView()
+            {
+                MyAction = ControllerContext.ActionDescriptor.ActionName,
+                MyController = ControllerContext.ActionDescriptor.ControllerName,
+                UserId = user.Id,
+            };
 
-            var action = ControllerContext.ActionDescriptor.ActionName;
-            var controller = ControllerContext.ActionDescriptor.ControllerName;
-            var pageCount = count / countOnPage + (count % countOnPage == 0 ? 0 : 1);
+            var count = CatalogView.CountListVideo(_db, catalog);
 
-            var catalog = new CatalogView(videos, 0, pageCount, countOnPage, controller, action, user.Id);
+            catalog.PageCount = count / catalog.CountOnPage + (count % catalog.CountOnPage == 0 ? 0 : 1);
+            catalog.Videos = CatalogView.GetListVideo(_db, catalog);
+
+            CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
+            CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
 
             return View("Catalog", catalog);
         }
@@ -49,28 +44,15 @@ namespace SiteFilms.Controllers
         public async Task<IActionResult> Catalog(CatalogView? view)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User) ?? new Person();
-
             view ??= new CatalogView();
+            view.UserId = user.Id;
 
-            var count = await _db.Videos
-                .AsNoTracking()
-                .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
-                .CountAsync();
+            var count = CatalogView.CountListVideo(_db, view);
 
             view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
-
             if (view.PageIndex >= view.PageCount || view.PageIndex < 0) view.PageIndex = 0;
 
-            var videos = await _db.Videos
-                .AsNoTracking()
-                .Where(x => x.FlagCheck || x.AspNetUsersId == user.Id)
-                .Include(x => x.Country)
-                .Include(x => x.Genre)
-                .Skip(view.PageIndex * view.CountOnPage)
-                .Take(view.CountOnPage)
-                .ToListAsync();
-
-            view.Videos = videos;
+            view.Videos = CatalogView.GetListVideo(_db, view);
             view.UserId = user.Id;
 
             return View("Catalog", view);
