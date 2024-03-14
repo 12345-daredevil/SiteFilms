@@ -1,6 +1,6 @@
 ﻿@model CatalogView
 @{
-    int y = 1;
+    int y = Model.PageIndex * Model.CountOnPage + 1;
 }
 
 @if (Model.Videos == null || Model.Videos.Count == 0)
@@ -38,7 +38,7 @@ else
                         <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
                             <input type="number" name="Id" value="@val.Id" hidden />
                             <div class="my_button">
-                                <button class="btn btn-primary" type="submit">Edit</button>
+                                <button class="btn btn-secondary" type="submit">Edit</button>
                             </div>
                         </form>
                     }

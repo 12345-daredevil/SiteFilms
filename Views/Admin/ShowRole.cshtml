@@ -4,46 +4,62 @@
     var role = ViewBag.Roles;
 }
 
-<h4>Role - @role</h4>
-
-<table>
-    @foreach (var val in Model)
-    {
+<div style="width: 400px; margin: 0px auto;">
+    <table style="margin: 50px auto; width: 100%; border-spacing: 0px 10px; border-collapse: separate;">
         <tr>
-            <td width="20px">@i.</td>
-            <td>@val</td>
+            <td colspan="2">
+                <h4>Role - @role</h4>
+            </td>
         </tr>
-        i++;
-    }
-</table>
+        @foreach (var val in Model)
+        {
+            <tr>
+                <td width="20px">@i.</td>
+                <td>@val</td>
+            </tr>
+            i++;
+        }
+    </table>
 
-<br />
-<br />
+    <form asp-action="AddRole" asp-controller="Admin" asp-antiforgery="true">
+        <table style="margin: 50px auto; width: 100%; border-spacing: 0px 10px; border-collapse: separate;">
+            @Html.Hidden("role")
+            <tr>
+                <td colspan="2"><h4>Add Role - @role</h4></td>
+            </tr>
+            <tr>
+                <td width="30%">Email</td>
+                <td><input type="text" name="email" class="form-control" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="my_button" style="text-align: center">
+                        <button class="btn btn-primary" type="submit"> Add </button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
 
-<form asp-action="AddRole" asp-controller="Admin" asp-antiforgery="true">
-    <div>
-        <h4>Add Role - @role</h4>
-        <div>
-            <label>Email</label>
-            <input type="text" name="email" />
-            <input hidden name="role" autocomplete="off" value=@role />
-        </div>
-        <div class="my_button">
-            <button class="btn btn-primary" type="submit"> Add </button>
-        </div>
-    </div>
-</form>
+    <form asp-action="DeleteRole" asp-controller="Admin" asp-antiforgery="true">
+        <table style="margin: 50px auto; width: 100%; border-spacing: 0px 10px; border-collapse: separate;">
+            @Html.Hidden("role")
+            <tr>
+                <td colspan="2"><h4>Delete Role - @role</h4></td>
+            </tr>
+            <tr>
+                <td width="30%">Email</td>
+                <td><input type="text" name="email" class="form-control" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="my_button" style="text-align: center">
+                        <button class="btn btn-primary" type="submit"> Delete </button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
 
-<form asp-action="DeleteRole" asp-controller="Admin" asp-antiforgery="true">
-    <div>
-        <h4>Delete Role - @role</h4>
-        <div>
-            <label>Email</label>
-            <input type="text" name="email" />
-            <input hidden name="role" autocomplete="off" value=@role />
-        </div>
-        <div class="my_button">
-            <button class="btn btn-primary" type="submit"> Delete </button>
-        </div>
-    </div>
-</form>
+</div>
+

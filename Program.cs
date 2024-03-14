@@ -42,7 +42,7 @@ namespace SiteFilms
 
             builder.Services.AddMemoryCache();
 
-            builder.Services.AddTransient<IEmailSender, EmailSender>();
+            //builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddControllersWithViews(options =>
             {

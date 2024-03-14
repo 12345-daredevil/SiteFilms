@@ -106,7 +106,7 @@ namespace SiteFilms.Areas.Identity.Pages.Account
             [Required]
             [DataType(DataType.Date)]
             [Display(Name = "Date of birth")]
-            [Range(typeof(DateTime), "1/1/1900", "1/1/2024", ErrorMessage = "Value for {0} must be between {1} and {2}")]
+            //[Range(typeof(DateTime), "1.1.1900", "1.1.2024", ErrorMessage = "Value for {0} must be between {1} and {2}")]
             public DateTime Age { get; set; }
         }
 

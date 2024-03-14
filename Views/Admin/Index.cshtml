@@ -3,12 +3,17 @@
 <h1>Admin</h1>
 
 <form method="post" asp-antiforgery="true" asp-controller="Admin" asp-action="ShowRole">
-    <h2>Manage role</h2>
-    <div>
-        @Html.DropDownList("role", new SelectList(@Model))
-        <button class="btn btn-primary" type="submit"> Manage </button>
-    </div>
+    <table style="margin: 50px 0px">
+        <tr>
+            <td colspan="2"><h2>Manage role</h2></td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DropDownList("role", new SelectList(@Model), new { @class = "form-select" })
+            </td>
+            <td><button class="btn btn-primary" type="submit"> Manage </button></td>
+        </tr>
+    </table>    
 </form>
-<br />
 
 <a class="btn btn-primary" asp-controller="Admin" asp-action="ShowMessage">Message</a>

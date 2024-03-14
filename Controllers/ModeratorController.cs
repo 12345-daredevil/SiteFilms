@@ -64,6 +64,7 @@ namespace SiteFilms.Controllers
         public async Task<IActionResult> DeleteCountry(uint Id)
         {
             await _db.Countrys.Where(x => x.Id == Id).ExecuteDeleteAsync();
+            MyСacheModel.DeleteCache(_cache, "Country");
             return View("_Errors", new Error("Success!", "Country was deleted.", "Moderator"));
         }
 
@@ -74,6 +75,8 @@ namespace SiteFilms.Controllers
 
             await _db.Countrys.AddAsync(new Country(name));
             await _db.SaveChangesAsync();
+
+            MyСacheModel.DeleteCache(_cache, "Country");
 
             return View("_Errors", new Error("Success!", "Country was add.", "Moderator"));
         }
@@ -89,6 +92,7 @@ namespace SiteFilms.Controllers
         public async Task<IActionResult> DeleteGenre(uint Id)
         {
             await _db.Genres.Where(x => x.Id == Id).ExecuteDeleteAsync();
+            MyСacheModel.DeleteCache(_cache, "Genre");
             return View("_Errors", new Error("Success!", "Genre was deleted.", "Moderator"));
         }
 
@@ -99,6 +103,8 @@ namespace SiteFilms.Controllers
 
             await _db.Genres.AddAsync(new Genre(name));
             await _db.SaveChangesAsync();
+
+            MyСacheModel.DeleteCache(_cache, "Genre");
 
             return View("_Errors", new Error("Success!", "Genre was add.", "Moderator"));
         }
