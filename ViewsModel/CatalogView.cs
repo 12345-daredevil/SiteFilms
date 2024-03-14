@@ -39,43 +39,55 @@ namespace SiteFilms.ViewsModel
             UserId = userId;
         }
 
-        public static int CountListVideo(ApplicationDbContext _db, CatalogView view)
+        public static async Task<int> CountListVideo(ApplicationDbContext _db, CatalogView view)
         {
             var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId, view.Moderator);
-            return _db.Videos.AsNoTracking().Where(abc).Count();
+
+            var list = await _db.Videos
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (abc != null)
+                foreach (var val in abc)
+                    list = list.Where(val).ToList();
+
+            return list.Count;
         }
 
-        public static List<Video> GetListVideo(ApplicationDbContext _db, CatalogView view)
+        public static async Task<List<Video>> GetListVideo(ApplicationDbContext _db, CatalogView view)
         {
             var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId, view.Moderator);
 
-            return _db.Videos
+            var list = await _db.Videos
                 .AsNoTracking()
                 .Include(x => x.Country)
                 .Include(x => x.Genre)
-                .Where(abc)
+                .ToListAsync();
+
+            if (abc != null)
+                foreach (var val in abc)
+                    list = list.Where(val).ToList();
+
+            return list
                 .Skip(view.PageIndex * view.CountOnPage)
                 .Take(view.CountOnPage)
                 .ToList();
         }
 
-        static Func<Video, bool> Filter(int selectGenre, int selectCountry, string? userId, bool moderetor)
+        static List<Func<Video, bool>> Filter(int selectGenre, int selectCountry, string? userId, bool moderator)
         {
-            Func<Video, bool> abc = x => x.TimeVideo >= 0;
-
-            abc = x => x.FlagCheck || x.AspNetUsersId == userId;
+            List<Func<Video, bool>> abc = [];
+                
+                abc.Add(x => moderator ? !x.FlagCheck : x.FlagCheck || x.AspNetUsersId == userId);
 
             if (selectGenre != 0 && selectCountry == 0)
-                abc += x => x.GenreId == selectGenre;
+                abc.Add(x => x.GenreId == selectGenre);
 
             if (selectGenre == 0 && selectCountry != 0)
-                abc += x => x.CountryId == selectCountry;
+                abc.Add(x => x.CountryId == selectCountry);
 
             if (selectGenre != 0 && selectCountry != 0)
-                abc += x => x.CountryId == selectCountry && x.GenreId == selectGenre;
-
-            if (moderetor)
-            {}
+                abc.Add(x => x.CountryId == selectCountry && x.GenreId == selectGenre);
 
             return abc;
         }

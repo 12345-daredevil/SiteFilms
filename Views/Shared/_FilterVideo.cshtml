@@ -14,20 +14,14 @@
             <div style="width: 120px">
                 @Html.DropDownListFor(m => m.SelectGenre, new SelectList(CatalogView.Genge, "Id", "Name"), "Genre", new { @class = "form-select" })
             </div>
-
-            @if (User.IsInRole("moderator") || User.IsInRole("admin"))
-            {
-                <div style="width: 120px">
-                    @Html.DropDownListFor(m => m.SelectGenre, new SelectList(CatalogView.Genge, "Id", "Name"), "Genre", new { @class = "form-select" })
-                </div>
-            }
         </div>
 
         @Html.HiddenFor(x => x.UserId)
+        @Html.HiddenFor(x => x.MyAction)
         @Html.HiddenFor(x => x.PageCount)
+        @Html.HiddenFor(x => x.Moderator)
         @Html.HiddenFor(x => x.CountOnPage)
         @Html.HiddenFor(x => x.MyController)
-        @Html.HiddenFor(x => x.MyAction)
 
         <div class="my_button" style="margin:0px 10px">
             <button class="btn btn-primary" type="submit">Change</button>

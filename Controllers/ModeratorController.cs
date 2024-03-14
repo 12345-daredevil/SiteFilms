@@ -9,31 +9,33 @@ using SiteFilms.ViewsModel;
 namespace SiteFilms.Controllers
 {
     [Authorize(Roles = "moderator,admin")]
-    public class ModeratorController : Controller
+    public class ModeratorController(ApplicationDbContext db, UserManager<Person> user) : Controller
     {
-        readonly ApplicationDbContext _db;
-
-        public ModeratorController(ApplicationDbContext db)
-        {
-            _db = db;
-        }
+        readonly ApplicationDbContext _db = db;
+        readonly UserManager<Person> _userManager = user;
 
         public async Task<IActionResult> Index()
         {
-            byte countOnPage = 5;
-            var count = await _db.Videos.AsNoTracking().CountAsync(); 
-            var videos = await _db.Videos
-                .AsNoTracking()
-                .Include(x => x.Country)
-                .Include(x => x.Genre)
-                .Take(countOnPage)
-                .ToListAsync();
+            var user = await _userManager.GetUserAsync(HttpContext.User) ?? new();
 
-            var action = ControllerContext.ActionDescriptor.ActionName;
-            var controller = ControllerContext.ActionDescriptor.ControllerName;
-            var pageCount = count % countOnPage == 0 ? count / countOnPage : count / countOnPage + 1;
+            var catalog = new CatalogView()
+            {
+                MyAction = ControllerContext.ActionDescriptor.ActionName,
+                MyController = ControllerContext.ActionDescriptor.ControllerName,
+                UserId = user.Id,
+                Moderator = true,
+            };
 
-            var catalog = new CatalogView(videos, 0, pageCount, countOnPage, controller, action);
+            var count = await CatalogView.CountListVideo(_db, catalog);
+
+            catalog.PageCount = count / catalog.CountOnPage + (count % catalog.CountOnPage == 0 ? 0 : 1);
+            catalog.Videos = await CatalogView.GetListVideo(_db, catalog);
+
+            if (CatalogView.Country.Length == 0)
+                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
+
+            if (CatalogView.Genge.Length == 0)
+                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
 
             return View("Index", catalog);
         }
@@ -41,22 +43,24 @@ namespace SiteFilms.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(CatalogView view)
         {
-            view ??= new CatalogView();
-            var videos = await _db.Videos
-                .AsNoTracking()
-                .Where(x => !x.FlagCheck)
-                .Include(x => x.Country)
-                .Include(x => x.Genre)
-                .Skip(view.PageIndex * view.CountOnPage)
-                .Take(view.CountOnPage)
-                .ToListAsync();
+            if (view.UserId == null)
+            {
+                var user = await _userManager.GetUserAsync(HttpContext.User) ?? new Person();
+                view.UserId = user.Id;
+            }
 
-            var count = CatalogView.CountListVideo(_db, view);
+            var count = await CatalogView.CountListVideo(_db, view);
 
             view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
             if (view.PageIndex >= view.PageCount || view.PageIndex < 0) view.PageIndex = 0;
 
-            view.Videos = CatalogView.GetListVideo(_db, view);
+            view.Videos = await CatalogView.GetListVideo(_db, view);
+
+            if (CatalogView.Country.Length == 0)
+                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
+
+            if (CatalogView.Genge.Length == 0)
+                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
 
             return View("Index", view);
         }

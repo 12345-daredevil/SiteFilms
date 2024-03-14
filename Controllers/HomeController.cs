@@ -29,34 +29,41 @@ namespace SiteFilms.Controllers
                 UserId = user.Id,
             };
 
-            var count = CatalogView.CountListVideo(_db, catalog);
+            var count = await CatalogView.CountListVideo(_db, catalog);
 
             catalog.PageCount = count / catalog.CountOnPage + (count % catalog.CountOnPage == 0 ? 0 : 1);
-            catalog.Videos = CatalogView.GetListVideo(_db, catalog);
+            catalog.Videos = await CatalogView.GetListVideo(_db, catalog);
 
-            CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-            CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
+            if (CatalogView.Country.Length == 0)
+                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
+
+            if (CatalogView.Genge.Length == 0)
+                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
 
             return View("Catalog", catalog);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Catalog(CatalogView? view)
+        public async Task<IActionResult> Catalog(CatalogView view)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User) ?? new Person();
-            view ??= new CatalogView();
-            view.UserId = user.Id;
+            if(view.UserId == null)
+            {
+                var user = await _userManager.GetUserAsync(HttpContext.User) ?? new Person();
+                view.UserId = user.Id;
+            }
 
-            var count = CatalogView.CountListVideo(_db, view);
+            var count = await CatalogView.CountListVideo(_db, view);
 
             view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
             if (view.PageIndex >= view.PageCount || view.PageIndex < 0) view.PageIndex = 0;
 
-            view.Videos = CatalogView.GetListVideo(_db, view);
-            view.UserId = user.Id;
+            view.Videos = await CatalogView.GetListVideo(_db, view);
 
-            CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-            CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
+            if (CatalogView.Country.Length == 0)
+                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
+
+            if (CatalogView.Genge.Length == 0)
+                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
 
             return View("Catalog", view);
         }
