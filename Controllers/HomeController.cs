@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using SiteFilms.Data;
 using SiteFilms.Models;
 using SiteFilms.ViewsModel;
@@ -10,11 +11,12 @@ using System.Diagnostics;
 
 namespace SiteFilms.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<Person> user) : Controller
+    public class HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<Person> user, IMemoryCache cache) : Controller
     {
         private readonly ILogger<HomeController> _logger = logger;
         readonly ApplicationDbContext _db = db;
         readonly UserManager<Person> _userManager = user;
+        readonly IMemoryCache _cache = cache;
 
         public IActionResult Index() => View();
 
@@ -29,16 +31,9 @@ namespace SiteFilms.Controllers
                 UserId = user.Id,
             };
 
-            var count = await CatalogView.CountListVideo(_db, catalog);
-
-            catalog.PageCount = count / catalog.CountOnPage + (count % catalog.CountOnPage == 0 ? 0 : 1);
             catalog.Videos = await CatalogView.GetListVideo(_db, catalog);
-
-            if (CatalogView.Country.Length == 0)
-                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-
-            if (CatalogView.Genge.Length == 0)
-                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
+            catalog.Country = await MyÑacheModel.GetCacheCountry(_db, _cache);
+            catalog.Genge = await MyÑacheModel.GetCacheGenre(_db, _cache);
 
             return View("Catalog", catalog);
         }
@@ -52,18 +47,11 @@ namespace SiteFilms.Controllers
                 view.UserId = user.Id;
             }
 
-            var count = await CatalogView.CountListVideo(_db, view);
-
-            view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
             if (view.PageIndex >= view.PageCount || view.PageIndex < 0) view.PageIndex = 0;
 
             view.Videos = await CatalogView.GetListVideo(_db, view);
-
-            if (CatalogView.Country.Length == 0)
-                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-
-            if (CatalogView.Genge.Length == 0)
-                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
+            view.Country = await MyÑacheModel.GetCacheCountry(_db, _cache);
+            view.Genge = await MyÑacheModel.GetCacheGenre(_db, _cache);
 
             return View("Catalog", view);
         }

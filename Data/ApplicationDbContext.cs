@@ -39,6 +39,10 @@ namespace SiteFilms.Data
                     });
 
             builder.Entity<Message>().HasData(new Message());
+
+            builder.Entity<Country>().HasData(new Country(1, "Russia"), new Country(2, "China"), new Country(3, "Italy"));
+
+            builder.Entity<Genre>().HasData(new Genre(1, "Horror"), new Genre(2, "Humor"), new Genre(3, "Action"));
         }
     }
 }

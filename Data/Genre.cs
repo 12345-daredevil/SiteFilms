@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Identity.Client;
+using System.ComponentModel.DataAnnotations;
 
 namespace SiteFilms.Data
 {
@@ -9,6 +10,12 @@ namespace SiteFilms.Data
         public string Name { get; set; } = string.Empty;
 
         public Genre() { }
+
+        public Genre(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
 
         public Genre(string name) => Name = name;
 

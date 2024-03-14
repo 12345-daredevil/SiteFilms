@@ -8,11 +8,11 @@
             </div>
 
             <div style="width: 120px">
-                @Html.DropDownListFor(m => m.SelectCountry, new SelectList(CatalogView.Country, "Id", "Name"), "Country", new { @class = "form-select" })
+                @Html.DropDownListFor(m => m.SelectCountry, new SelectList(Model.Country, "Id", "Name"), "Country", new { @class = "form-select" })
             </div>
 
             <div style="width: 120px">
-                @Html.DropDownListFor(m => m.SelectGenre, new SelectList(CatalogView.Genge, "Id", "Name"), "Genre", new { @class = "form-select" })
+                @Html.DropDownListFor(m => m.SelectGenre, new SelectList(Model.Genge, "Id", "Name"), "Genre", new { @class = "form-select" })
             </div>
         </div>
 

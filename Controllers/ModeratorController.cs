@@ -3,16 +3,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using SiteFilms.Data;
+using SiteFilms.Models;
 using SiteFilms.ViewsModel;
 
 namespace SiteFilms.Controllers
 {
     [Authorize(Roles = "moderator,admin")]
-    public class ModeratorController(ApplicationDbContext db, UserManager<Person> user) : Controller
+    public class ModeratorController(ApplicationDbContext db, UserManager<Person> user, IMemoryCache cache) : Controller
     {
         readonly ApplicationDbContext _db = db;
         readonly UserManager<Person> _userManager = user;
+        readonly IMemoryCache _cache = cache;
 
         public async Task<IActionResult> Index()
         {
@@ -26,16 +29,9 @@ namespace SiteFilms.Controllers
                 Moderator = true,
             };
 
-            var count = await CatalogView.CountListVideo(_db, catalog);
-
-            catalog.PageCount = count / catalog.CountOnPage + (count % catalog.CountOnPage == 0 ? 0 : 1);
             catalog.Videos = await CatalogView.GetListVideo(_db, catalog);
-
-            if (CatalogView.Country.Length == 0)
-                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-
-            if (CatalogView.Genge.Length == 0)
-                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
+            catalog.Country = await MyСacheModel.GetCacheCountry(_db, _cache);
+            catalog.Genge = await MyСacheModel.GetCacheGenre(_db, _cache);
 
             return View("Index", catalog);
         }
@@ -49,25 +45,21 @@ namespace SiteFilms.Controllers
                 view.UserId = user.Id;
             }
 
-            var count = await CatalogView.CountListVideo(_db, view);
-
-            view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
             if (view.PageIndex >= view.PageCount || view.PageIndex < 0) view.PageIndex = 0;
 
             view.Videos = await CatalogView.GetListVideo(_db, view);
-
-            if (CatalogView.Country.Length == 0)
-                CatalogView.Country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-
-            if (CatalogView.Genge.Length == 0)
-                CatalogView.Genge = await _db.Genres.AsNoTracking().ToArrayAsync();
+            view.Country = await MyСacheModel.GetCacheCountry(_db, _cache);
+            view.Genge = await MyСacheModel.GetCacheGenre(_db, _cache);
 
             return View("Index", view);
         }
 
         #region Country
         public async Task<IActionResult> ShowCountry()
-            => View("ShowCountry", await _db.Countrys.AsNoTracking().ToListAsync());
+        {
+            var show = await MyСacheModel.GetCacheCountry(_db, _cache);
+            return View("ShowCountry", show.OrderBy(x => x.Name).ToList());
+        }
 
         public async Task<IActionResult> DeleteCountry(uint Id)
         {
@@ -89,7 +81,10 @@ namespace SiteFilms.Controllers
 
         #region Genre
         public async Task<IActionResult> ShowGenre()
-            => View("ShowGenre", await _db.Genres.AsNoTracking().ToListAsync());
+        {
+            var show = await MyСacheModel.GetCacheGenre(_db, _cache);
+            return View("ShowGenre", show.OrderBy(x => x.Name).ToList());
+        }
 
         public async Task<IActionResult> DeleteGenre(uint Id)
         {

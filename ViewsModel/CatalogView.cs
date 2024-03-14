@@ -8,8 +8,8 @@ namespace SiteFilms.ViewsModel
     public class CatalogView
     {
         public int[] AllCountOnPage { get; set; } = new int[] { 5, 10, 20 };
-        static public Country[] Country { get; set; } = [];
-        static public Genre[] Genge { get; set; } = [];
+        public Country[] Country { get; set; } = [];
+        public Genre[] Genge { get; set; } = [];
         public int SelectCountry { get; set; } = 0;
         public int SelectGenre { get; set; } = 0;
         public List<Video>? Videos { get; set; }
@@ -39,20 +39,20 @@ namespace SiteFilms.ViewsModel
             UserId = userId;
         }
 
-        public static async Task<int> CountListVideo(ApplicationDbContext _db, CatalogView view)
-        {
-            var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId, view.Moderator);
+        //public static async Task<int> CountListVideo(ApplicationDbContext _db, CatalogView view)
+        //{
+        //    var abc = Filter(view.SelectGenre, view.SelectCountry, view.UserId, view.Moderator);
 
-            var list = await _db.Videos
-                .AsNoTracking()
-                .ToListAsync();
+        //    var list = await _db.Videos
+        //        .AsNoTracking()
+        //        .ToListAsync();
 
-            if (abc != null)
-                foreach (var val in abc)
-                    list = list.Where(val).ToList();
+        //    if (abc != null)
+        //        foreach (var val in abc)
+        //            list = list.Where(val).ToList();
 
-            return list.Count;
-        }
+        //    return list.Count;
+        //}
 
         public static async Task<List<Video>> GetListVideo(ApplicationDbContext _db, CatalogView view)
         {
@@ -64,21 +64,27 @@ namespace SiteFilms.ViewsModel
                 .Include(x => x.Genre)
                 .ToListAsync();
 
+
             if (abc != null)
                 foreach (var val in abc)
                     list = list.Where(val).ToList();
 
-            return list
+            var count = list.Count;
+            view.PageCount = count / view.CountOnPage + (count % view.CountOnPage == 0 ? 0 : 1);
+
+            list = list
                 .Skip(view.PageIndex * view.CountOnPage)
                 .Take(view.CountOnPage)
                 .ToList();
+
+            return list;
         }
 
         static List<Func<Video, bool>> Filter(int selectGenre, int selectCountry, string? userId, bool moderator)
         {
             List<Func<Video, bool>> abc = [];
                 
-                abc.Add(x => moderator ? !x.FlagCheck : x.FlagCheck || x.AspNetUsersId == userId);
+            abc.Add(x => moderator ? !x.FlagCheck : x.FlagCheck || x.AspNetUsersId == userId);
 
             if (selectGenre != 0 && selectCountry == 0)
                 abc.Add(x => x.GenreId == selectGenre);
