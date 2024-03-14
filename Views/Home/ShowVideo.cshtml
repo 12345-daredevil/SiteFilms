@@ -1,35 +1,35 @@
 ﻿@model Video
 
-<table class="table-bordered">
+<table class="table table-hover" width="100%">
     <tbody>
         <tr>
-            <td rowspan="8">kdsf</td>
-            <td>@Html.LabelFor(x => x.Name)</td>
-            <td>@Html.LabelForModel(Model.Name)</td>
+            <td rowspan="8" width="250px">kdsf</td>
+            <td width="150px">@Html.LabelFor(x => x.Name)</td>
+            <td>@Model.Name</td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(x => x.Name)</td>
-            <td>@Html.LabelForModel(Model.Name)</td>
+            <td>@Html.LabelFor(x => x.Description)</td>
+            <td>@Model.Description</td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(x => x.Name)</td>
-            <td>@Html.LabelForModel(Model.Name)</td>
+            <td>@Html.LabelFor(x => x.Country)</td>
+            <td>@Model.Country!.Name</td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(x => x.Name)</td>
-            <td>@Html.LabelForModel(Model.Name)</td>
+            <td>@Html.LabelFor(x => x.Genre)</td>
+            <td>@Model.Genre!.Name</td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(x => x.Name)</td>
-            <td>@Html.LabelForModel(Model.Name)</td>
+            <td>@Html.LabelFor(x => x.MakeDate)</td>
+            <td>@Model.MakeDate.Date.Year</td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(x => x.Name)</td>
-            <td>@Html.LabelForModel(Model.Name)</td>
+            <td>@Html.LabelFor(x => x.AgeRestriction)</td>
+            <td>@Model.AgeRestriction</td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(x => x.Name)</td>
-            <td>@Html.LabelForModel(Model.Name)</td>
+            <td>@Html.LabelFor(x => x.TimeVideo)</td>
+            <td>@Model.TimeVideo</td>
         </tr>
     </tbody>
 </table>

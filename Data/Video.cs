@@ -25,6 +25,7 @@ namespace SiteFilms.Data
         public DateTime MakeDate { get; set; } 
         public DateTime AddDate { get; set; } = DateTime.UtcNow.Date;
         public bool FlagCheck { get; set; } = false;
+        public byte[]? Skin { get; set; }
 
         public Video() { }
 

@@ -21,7 +21,7 @@
 <br/>
 
 <div style="margin: 0px auto; display:table">
-    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
+    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo" enctype="multipart/form-data">
         <table>
             @Html.HiddenFor(x => x.Video.Id)
 

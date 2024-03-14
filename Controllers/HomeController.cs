@@ -8,6 +8,10 @@ using SiteFilms.Data;
 using SiteFilms.Models;
 using SiteFilms.ViewsModel;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Reflection.Metadata;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SiteFilms.Controllers
 {
@@ -59,22 +63,34 @@ namespace SiteFilms.Controllers
         [Authorize]
         public async Task<IActionResult> AddVideo()
         {
-            var country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-            var genre = await _db.Genres.AsNoTracking().ToArrayAsync();
-            return View("AddVideo", new VideoView(new Video(), country, genre));
+            var country = await My—acheModel.GetCacheCountry(_db, _cache);
+            var genre = await My—acheModel.GetCacheGenre(_db, _cache);
+            return View("AddVideo", new VideoView(new Video(), country.ToArray(), genre.ToArray()));
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> AddVideo(VideoView view)
+        public async Task<IActionResult> AddVideo(VideoView view, IFormFile file)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(HttpContext.User);
                 if (user == null) return View("AddVideo", view);
 
-                var ob = new Video(view.Video.Name, view.Video.Description, view.Video.CountryId,
+                var ob = new Data.Video(view.Video.Name, view.Video.Description, view.Video.CountryId,
                     view.Video.GenreId, view.Video.TimeVideo, view.Video.AgeRestriction, view.Video.MakeDate, user.Id);
+
+                if (file != null)
+                {
+                    byte[] p1;
+                    using (var fs1 = file.OpenReadStream())
+                    using (var ms1 = new MemoryStream())
+                    {
+                        fs1.CopyTo(ms1);
+                        p1 = ms1.ToArray();
+                    }
+                    ob.Skin = p1;
+                }
 
                 await _db.Videos.AddAsync(ob);
                 await _db.SaveChangesAsync();
@@ -117,7 +133,11 @@ namespace SiteFilms.Controllers
         }
 
         public async Task<IActionResult> ShowVideo(uint Id) 
-            => View("ShowVideo", await _db.Videos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Id) ?? new Video());
+            => View("ShowVideo", await _db.Videos
+                .AsNoTracking()
+                .Include(x => x.Country)
+                .Include(x => x.Genre)
+                .FirstOrDefaultAsync(x => x.Id == Id) ?? new Video());
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

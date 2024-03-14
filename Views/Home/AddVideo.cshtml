@@ -3,7 +3,7 @@
 <h1>Add video</h1>
 
 <div style="margin: 0px auto; display:table">
-    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="AddVideo">
+    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="AddVideo" enctype="multipart/form-data">
         <table>
 
             @await Html.PartialAsync("_TableViewFilms", Model)
