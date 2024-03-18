@@ -74,14 +74,24 @@ namespace SiteFilms.Controllers
         {
             if (ModelState.IsValid)
             {
+                view.Countries = await MyÑacheModel.GetCacheCountry(_db, _cache);
+                view.Genres = await MyÑacheModel.GetCacheGenre(_db, _cache);
+
                 var user = await _userManager.GetUserAsync(HttpContext.User);
                 if (user == null) return View("AddVideo", view);
 
-                var ob = new Data.Video(view.Video.Name, view.Video.Description, view.Video.CountryId,
+                var ob = new Video(view.Video.Name, view.Video.Description, view.Video.CountryId,
                     view.Video.GenreId, view.Video.TimeVideo, view.Video.AgeRestriction, view.Video.MakeDate, user.Id);
 
                 if (file != null)
                 {
+                    if (file.ContentType != "image/jpeg" && file.ContentType != "image/png" && file.ContentType != "image/webp")
+                        return View("_Errors", new Error("Error!", "Please choose a JPEG, PNG or WEBP image."));
+
+
+                    if (file.Length > (512 * 1024))
+                        return View("_Errors", new Error("Error!", "File size cannot exceed 512 Kb."));
+
                     byte[] p1;
                     using (var fs1 = file.OpenReadStream())
                     using (var ms1 = new MemoryStream())
@@ -89,7 +99,7 @@ namespace SiteFilms.Controllers
                         fs1.CopyTo(ms1);
                         p1 = ms1.ToArray();
                     }
-                    ob.Skin = p1;
+                    view.Video.Skin = p1;
                 }
 
                 await _db.Videos.AddAsync(ob);
@@ -107,15 +117,37 @@ namespace SiteFilms.Controllers
                 .Include(x => x.Genre)
                 .FirstAsync(x => x.Id == Id);
 
-            var country = await _db.Countrys.AsNoTracking().ToArrayAsync();
-            var genre = await _db.Genres.AsNoTracking().ToArrayAsync();
+            var country = await MyÑacheModel.GetCacheCountry(_db, _cache);
+            var genre = await MyÑacheModel.GetCacheGenre(_db, _cache);
             return View("EditVideo", new VideoView(video, country, genre));
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditVideo(VideoView newVideo)
+        public async Task<IActionResult> EditVideo(VideoView newVideo, IFormFile file)
         {
             var oldVideo = await _db.Videos.FirstAsync(x => x.Id == newVideo.Video.Id);
+            newVideo.Countries = await MyÑacheModel.GetCacheCountry(_db, _cache);
+            newVideo.Genres = await MyÑacheModel.GetCacheGenre(_db, _cache);
+
+            if (file != null)
+            {
+                if (file.ContentType != "image/jpeg" && file.ContentType != "image/png" && file.ContentType != "image/webp")
+                    return View("_Errors", new Error("Error!", "Please choose a JPEG, PNG or WEBP image."));
+
+
+                if (file.Length > (512 * 1024))
+                    return View("_Errors", new Error("Error!", "File size cannot exceed 512 Kb."));
+
+                byte[] p1;
+                using (var fs1 = file.OpenReadStream())
+                using (var ms1 = new MemoryStream())
+                {
+                    fs1.CopyTo(ms1);
+                    p1 = ms1.ToArray();
+                }
+                oldVideo.Skin = p1;
+            }
+
             oldVideo.EditVideo(newVideo.Video);
             _db.Videos.Update(oldVideo);
             await _db.SaveChangesAsync();

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SiteFilms.Data
@@ -22,14 +23,16 @@ namespace SiteFilms.Data
         public Genre? Genre { get; set; }
         public ushort TimeVideo { get; set; }
         public byte AgeRestriction { get; set; }
-        public DateTime MakeDate { get; set; } 
+
+        [BindProperty, DataType(DataType.Date)]
+        public DateTime? MakeDate { get; set; } 
         public DateTime AddDate { get; set; } = DateTime.UtcNow.Date;
         public bool FlagCheck { get; set; } = false;
         public byte[]? Skin { get; set; }
 
         public Video() { }
 
-        public Video(string name, string? description, int countryId, int genreId, ushort timeVideo, byte ageRestriction, DateTime makeDate, string userId)
+        public Video(string name, string? description, int countryId, int genreId, ushort timeVideo, byte ageRestriction, DateTime? makeDate, string userId)
         {
             Name = name;
             Description = description;
@@ -49,10 +52,12 @@ namespace SiteFilms.Data
             CountryId = video.CountryId;
             TimeVideo = video.TimeVideo;
             AgeRestriction = video.AgeRestriction;
-            MakeDate = video.MakeDate;
             AddDate = video.AddDate;
             GenreId = video.GenreId;
             FlagCheck = video.FlagCheck;
+
+            if (video.MakeDate != null)
+                MakeDate = video.MakeDate;
         }
     }
 }

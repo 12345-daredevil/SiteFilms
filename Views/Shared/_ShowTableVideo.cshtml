@@ -23,47 +23,50 @@ else
                 <td colspan="3">@Html.LabelFor(x => x.Videos![0].Name): @val.Name</td>
             </tr>
             <tr>
-                <td>@Html.LabelFor(x => x.Videos![0].MakeDate): @val.MakeDate.Date.Year</td>
+                <td>@Html.LabelFor(x => x.Videos![0].MakeDate): @val.MakeDate?.Year</td>
                 <td>@Html.LabelFor(x => x.Videos![0].Country): @val.Country?.Name</td>
                 <td>@Html.LabelFor(x => x.Videos![0].Genre): @val.Genre?.Name</td>
             </tr>
             <tr>
                 <td>@Html.LabelFor(x => x.Videos![0].TimeVideo): @val.TimeVideo</td>
                 <td>@Html.LabelFor(x => x.Videos![0].AgeRestriction): +@val.AgeRestriction</td>
-                <td style="display: ruby-text; text-align:right">
-                    @if (User.IsInRole("moderator") || User.IsInRole("admin"))
-                    {
-                        @if(!val.FlagCheck)
+                <td style="vertical-align: bottom">
+                    <div style="display: flex; text-align: right; justify-content:space-between">
+                        @if (User.IsInRole("moderator") || User.IsInRole("admin"))
                         {
-                            <div>
-                                <img src="~/image/eye.png" height="25" />
-                            </div>
-                        }
+                            @if (!val.FlagCheck)
+                            {
+                                <div>
+                                    <img src="~/image/eye.png" height="25" />
+                                </div>
+                            }
 
-                        <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
-                            <input type="number" name="Id" value="@val.Id" hidden />
-                            <button type="submit"><img src="~/image/lead_pencil.png" height="25" /></button>
-                        </form>
-                    }
-                    else
-                    {
-                        @if (!val.FlagCheck && val.AspNetUsersId == Model.UserId)
-                        {
                             <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
                                 <input type="number" name="Id" value="@val.Id" hidden />
-                                <div class="my_button">
-                                    <button class="btn btn-primary" type="submit">Edit</button>
-                                </div>
+                                <button type="submit"><img src="~/image/lead_pencil.png" height="25" /></button>
                             </form>
                         }
-                    }
+                        else
+                        {
+                            @if (!val.FlagCheck && val.AspNetUsersId == Model.UserId)
+                            {
+                                <form method="get" asp-antiforgery="true" asp-controller="Home" asp-action="EditVideo">
+                                    <input type="number" name="Id" value="@val.Id" hidden />
+                                    <div class="my_button">
+                                        <button class="btn btn-primary" type="submit">Edit</button>
+                                    </div>
+                                </form>
+                            }
+                        }
 
-                    <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="ShowVideo">
-                        <input type="number" name="Id" value="@val.Id" hidden />
-                        <div class="my_button">
-                            <button class="btn btn-primary" type="submit">Show</button>
-                        </div>
-                    </form>
+                        <form method="post" asp-antiforgery="true" asp-controller="Home" asp-action="ShowVideo">
+                            <input type="number" name="Id" value="@val.Id" hidden />
+                            <div class="my_button">
+                                <button class="btn btn-primary" type="submit">Show</button>
+                            </div>
+                        </form>
+
+                    </div>
                 </td>
             </tr>
             y++;

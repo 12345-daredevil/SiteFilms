@@ -1,4 +1,5 @@
 ﻿using SiteFilms.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace SiteFilms.ViewsModel
 {

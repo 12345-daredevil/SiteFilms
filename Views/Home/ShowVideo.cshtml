@@ -3,7 +3,12 @@
 <table class="table table-hover" width="100%">
     <tbody>
         <tr>
-            <td rowspan="8" width="250px">kdsf</td>
+            <td rowspan="8" width="250px" style="text-align:center">
+                @if (Model.Skin != null)
+                {
+                    <img style='width:200px;' src="data:image/jpeg;base64,@(Convert.ToBase64String(Model.Skin))" />
+                }
+            </td>
             <td width="150px">@Html.LabelFor(x => x.Name)</td>
             <td>@Model.Name</td>
         </tr>
@@ -21,7 +26,7 @@
         </tr>
         <tr>
             <td>@Html.LabelFor(x => x.MakeDate)</td>
-            <td>@Model.MakeDate.Date.Year</td>
+            <td>@Model.MakeDate?.Year</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(x => x.AgeRestriction)</td>
